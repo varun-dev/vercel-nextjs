@@ -6,15 +6,11 @@ function MyApp({ Component, pageProps }) {
   return (
     <Layout>
       <Header>
-        <Row>
-          <Col span={20}>Todo List - Nextjs, GraphCMS, Vercel</Col>
-          <Col span={4}>EN | DE</Col>
-        </Row>
+        <Row>Todo List - Nextjs, GraphCMS, Vercel</Row>
       </Header>
       <Content>
         <Component {...pageProps} />
       </Content>
-      <Footer>Footer</Footer>
     </Layout>
   )
 }

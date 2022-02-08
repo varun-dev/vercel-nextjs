@@ -1,25 +1,29 @@
 import { Table } from 'antd'
 import { DeleteFilled } from '@ant-design/icons'
-import { apiDeleteTodo, apiUpdateTodo } from '../api/graphql'
+import { apiUpdateTodo } from '../api/api-client'
 import { useEffect, useState } from 'react'
+import { clientApiWrapper as $ } from '../utils/api-utils'
+import {
+  _filterAndMap,
+  _removeBy,
+  _updateBy,
+  _eqProp,
+  _prop,
+} from '../utils/list-utils'
+
+const getSelectedKeys = todos =>
+  _filterAndMap(todos, _eqProp('completed', true), _prop('id'))
 
 export default function TodoList({ todos, setTodos }) {
   const [selectedRowKeys, setSelectedRowKeys] = useState([])
 
   useEffect(() => {
-    const _selectedRowKeys = getSelectedRowKeys(todos)
-    setSelectedRowKeys(_selectedRowKeys)
+    setSelectedRowKeys(getSelectedKeys(todos))
   }, [todos])
 
   const onSelect = async ({ id }, completed) => {
-    // console.log('selectedRowKeys changed: ', selectedRowKeys)
     const updated = await apiUpdateTodo(id, completed)
-    // console.log('updated', updated)
-    const nextTodos = todos.map(todo => {
-      if (todo.id === id) return updated
-      return todo
-    }, [])
-    setTodos(nextTodos)
+    setTodos(_updateBy(todos, updated, 'id', id))
   }
 
   const onChange = selectedRowKeys => {
@@ -27,13 +31,9 @@ export default function TodoList({ todos, setTodos }) {
   }
 
   const deleteTodo = id => async () => {
-    await apiDeleteTodo(id)
-    setTodos(
-      todos.reduce((r, t) => {
-        if (t.id !== id) r.push(t)
-        return r
-      }, [])
-    )
+    // $ - server side api wrapper
+    await $('apiDeleteTodo', id)
+    setTodos(_removeBy(todos, 'id', id))
   }
 
   const columns = [
@@ -64,13 +64,4 @@ export default function TodoList({ todos, setTodos }) {
       style={{ width: '100%' }}
     />
   )
-}
-
-function getSelectedRowKeys(todos) {
-  return todos.reduce((r, { id, completed }) => {
-    if (completed === true) {
-      r.push(id)
-    }
-    return r
-  }, [])
 }
