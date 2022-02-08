@@ -3,6 +3,7 @@ import { apiAddTodo, apiGetTodos } from '../api/api-client'
 import { Col, Input, Row } from 'antd'
 import TodoList from '../components/TodoList'
 import { _append } from '../utils/list-utils'
+import { clientApiWrapper as $ } from '../utils/api-utils'
 
 export default function Main() {
   const [todos, setTodos] = useState([])
@@ -10,8 +11,8 @@ export default function Main() {
 
   useEffect(() => {
     async function fetchData() {
-      const todos = await apiGetTodos()
-      setTodos(todos)
+      const _todos = await $('apiGetTodos')
+      setTodos(_todos)
     }
     fetchData()
   }, [])
