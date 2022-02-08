@@ -8,12 +8,11 @@ export async function clientApiWrapper(name, ...args) {
       },
       body: JSON.stringify({ args }),
     })
-    const json = await response.json()
-    const data = json.data
+    const data = await response.json()
     if (response.status === 200) {
       return data
     } else {
-      console.error('API error', json.errors)
+      console.error('API error', data.errors)
       throw data
     }
   } catch (error) {
