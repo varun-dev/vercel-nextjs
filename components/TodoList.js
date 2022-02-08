@@ -21,19 +21,16 @@ export default function TodoList({ todos, setTodos }) {
     setSelectedRowKeys(getSelectedKeys(todos))
   }, [todos])
 
-  const onSelect = async ({ id }, completed) => {
+  const updateTodo = async ({ id }, completed) => {
     const updated = await apiUpdateTodo(id, completed)
     setTodos(_updateBy(todos, updated, 'id', id))
   }
 
-  const onChange = selectedRowKeys => {
-    setSelectedRowKeys(selectedRowKeys)
-  }
-
+  // optimistic update
   const deleteTodo = id => async () => {
-    // $ - server side api wrapper
-    await $('apiDeleteTodo', id)
     setTodos(_removeBy(todos, 'id', id))
+    // $ - server side call with api wrapper
+    await $('apiDeleteTodo', id)
   }
 
   const columns = [
@@ -49,8 +46,7 @@ export default function TodoList({ todos, setTodos }) {
 
   const rowSelection = {
     selectedRowKeys,
-    onSelect,
-    onChange,
+    onSelect: updateTodo,
   }
 
   return (
