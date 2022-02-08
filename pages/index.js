@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { apiAddTodo, apiGetTodos } from '../api/graphql'
+import { apiAddTodo, apiGetTodos } from '../api/api-client'
 import { Col, Input, Row } from 'antd'
 import TodoList from '../components/TodoList'
+import { _append } from '../utils/list-utils'
 
 export default function Main() {
   const [todos, setTodos] = useState([])
@@ -21,7 +22,7 @@ export default function Main() {
       const created = await apiAddTodo(todo)
       // console.log('created todo', created)
       setTodoText('')
-      setTodos(todos.concat([created]))
+      setTodos(_append(todos, created))
     }
   }
 
@@ -29,16 +30,21 @@ export default function Main() {
     <Row>
       <Col span={12} offset={6}>
         <Row>
-          <Input
-            type="text"
-            onKeyUp={_addTodo}
-            placeholder="Type todo and press enter"
-            value={todoText}
-            onChange={e => setTodoText(e.target.value)}
-          />
+          <Col span={20}>
+            <Input
+              type="text"
+              onKeyUp={_addTodo}
+              placeholder="Type todo and press enter"
+              value={todoText}
+              onChange={e => setTodoText(e.target.value)}
+              style={{ margin: '20px 0' }}
+            />
+          </Col>
         </Row>
         <Row>
-          <TodoList setTodos={setTodos} todos={todos} />
+          <Col span={20}>
+            <TodoList setTodos={setTodos} todos={todos} />
+          </Col>
         </Row>
       </Col>
     </Row>
