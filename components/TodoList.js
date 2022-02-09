@@ -1,7 +1,7 @@
 import { Table } from 'antd'
 import { useEffect, useState } from 'react'
 import { DeleteFilled } from '@ant-design/icons'
-import { apiUpdateTodo } from '../api/apis-todos'
+import { apiDeleteTodo, apiUpdateTodo } from '../api/apis-todos'
 import { clientApiWrapper as $ } from '../utils/api-utils'
 import {
   _filterAndMap,
@@ -29,8 +29,7 @@ export default function TodoList({ todos, setTodos }) {
   // optimistic update
   const deleteTodo = id => async () => {
     setTodos(_removeBy(todos, 'id', id))
-    // $ - server side call with api wrapper
-    await deleteTodo(id)
+    await apiDeleteTodo(id)
   }
 
   const columns = [
