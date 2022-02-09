@@ -1,13 +1,12 @@
-import { Col, Layout, Row } from 'antd'
 import { useEffect, useState } from 'react'
 import { apiGetCopies } from '../api/apis-todos'
 import { InputTodo } from '../components/input-todo'
 import { LocaleSwitcher } from '../components/locale-switcher'
 import TodoList from '../components/todo-list'
+import { Layout, Header, Content, Row, Col } from '../styles/grid'
+import { Separator, Title } from '../styles/styled-components'
 import { clientApiWrapper as $ } from '../utils/api-utils'
 import { _keyValues } from '../utils/list-utils'
-
-const { Header, Content } = Layout
 
 export async function getServerSideProps({ locale }) {
   const data = await apiGetCopies(locale)
@@ -29,30 +28,26 @@ export default function Main(props) {
   return (
     <Layout>
       <Header>
-        <Row>
-          <Col span={20}>{props.page_title}</Col>
-          <Col span={4}>
+        <Row css={{ height: 50 }}>
+          <Col css={{ span: 20 }}>
+            <Title>{props.page_title}</Title>
+          </Col>
+          <Col css={{ span: 4 }}>
             <LocaleSwitcher />
           </Col>
         </Row>
       </Header>
       <Content>
         <Row>
-          <Col span={12} offset={6}>
-            <Row>
-              <Col span={20}>
-                <InputTodo
-                  setTodos={setTodos}
-                  todos={todos}
-                  placeholder={props.input_placeholder}
-                />
-              </Col>
-            </Row>
-            <Row>
-              <Col span={20}>
-                <TodoList setTodos={setTodos} todos={todos} />
-              </Col>
-            </Row>
+          <Col css={{ span: 12 }}>
+            <Separator />
+            <InputTodo
+              setTodos={setTodos}
+              todos={todos}
+              placeholder={props.input_placeholder}
+            />
+            <Separator />
+            <TodoList setTodos={setTodos} todos={todos} />
           </Col>
         </Row>
       </Content>

@@ -1,6 +1,6 @@
-import { Input } from 'antd'
 import { useState } from 'react'
 import { apiAddTodo } from '../api/apis-todos'
+import { Input } from '../styles/styled-components'
 import { _append } from '../utils/list-utils'
 
 export function InputTodo({ todos, setTodos, placeholder }) {
@@ -10,7 +10,6 @@ export function InputTodo({ todos, setTodos, placeholder }) {
     if (e.keyCode === 13) {
       const todo = { description: e.target.value, completed: false }
       const created = await apiAddTodo(todo)
-      // console.log('created todo', created)
       setTodoText('')
       setTodos(_append(todos, created))
     }
@@ -23,7 +22,6 @@ export function InputTodo({ todos, setTodos, placeholder }) {
       placeholder={placeholder}
       value={todoText}
       onChange={e => setTodoText(e.target.value)}
-      style={{ margin: '20px 0' }}
     />
   )
 }

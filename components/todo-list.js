@@ -1,4 +1,5 @@
-import { Table } from 'antd'
+import Table from 'antd/lib/table'
+import 'antd/lib/table/style/index.css'
 import { useEffect, useState } from 'react'
 import { DeleteFilled } from '@ant-design/icons'
 import { apiDeleteTodo, apiUpdateTodo } from '../api/apis-todos'
