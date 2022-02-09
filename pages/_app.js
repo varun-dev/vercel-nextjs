@@ -1,5 +1,6 @@
-import 'antd/dist/antd.dark.css'
+import { globalStyles } from '../styles/core-styles'
 
 export default function App({ Component, pageProps }) {
+  globalStyles()
   return <Component {...pageProps} />
 }
