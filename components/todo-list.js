@@ -2,7 +2,6 @@ import { Table } from 'antd'
 import { useEffect, useState } from 'react'
 import { DeleteFilled } from '@ant-design/icons'
 import { apiDeleteTodo, apiUpdateTodo } from '../api/apis-todos'
-import { clientApiWrapper as $ } from '../utils/api-utils'
 import {
   _filterAndMap,
   _removeBy,
