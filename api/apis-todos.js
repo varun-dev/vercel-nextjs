@@ -85,3 +85,21 @@ export async function apiDeleteTodo(id) {
     throw e.response
   }
 }
+
+export async function apiGetCopies(locale) {
+  try {
+    const { copies } = await graphcms.request(
+      `{ 
+          copies (locales: ${locale}) {
+          key
+          copy
+          }
+        }
+    `
+    )
+
+    return copies
+  } catch (e) {
+    throw e.response
+  }
+}
