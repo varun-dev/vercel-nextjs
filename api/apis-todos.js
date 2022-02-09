@@ -7,8 +7,9 @@ const graphcms = new GraphQLClient(process.env.NEXT_PUBLIC_GRAPHCMS_URL, {
 })
 
 export async function apiGetTodos() {
-  const { todos } = await graphcms.request(
-    `
+  try {
+    const { todos } = await graphcms.request(
+      `
         { 
           todos {
           id
@@ -17,9 +18,12 @@ export async function apiGetTodos() {
           }
         }
     `
-  )
+    )
 
-  return todos
+    return todos
+  } catch (e) {
+    throw e.response
+  }
 }
 
 export async function apiAddTodo({ description }) {
@@ -57,4 +61,27 @@ export async function apiUpdateTodo(id, completed) {
   )
 
   return updateTodo
+}
+
+export async function deleteTodo(id) {
+  try {
+    const { deleteTodo } = await graphcms.request(
+      `
+      mutation deleteTodo($id: ID!) {
+        deleteTodo (
+        where: {id: $id}
+        ){
+          id
+          description
+          completed
+        }
+      }
+      `,
+      { id }
+    )
+
+    return deleteTodo
+  } catch (e) {
+    throw e.response
+  }
 }
