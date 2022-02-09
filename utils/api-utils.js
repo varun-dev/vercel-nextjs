@@ -1,4 +1,6 @@
-// api call wrapper for client side
+// following wrappers are for making server-side api calls
+
+// server side api call wrapper for client
 export async function clientApiWrapper(name, ...args) {
   try {
     const response = await fetch('/api/' + name, {
@@ -20,7 +22,7 @@ export async function clientApiWrapper(name, ...args) {
   }
 }
 
-// api call wrapper for server side
+// server side api call wrapper for server
 export function serverApiWrapper(fn) {
   return async ({ body: { args } }, res) => {
     let result = {}

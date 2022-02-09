@@ -1,5 +1,6 @@
-import 'antd/dist/antd.dark.css'
 import { Layout, Row, Col } from 'antd'
+import 'antd/dist/antd.dark.css'
+
 const { Header, Footer, Content } = Layout
 
 function MyApp({ Component, pageProps }) {

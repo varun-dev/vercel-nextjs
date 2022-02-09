@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
-import { apiAddTodo, apiGetTodos } from '../api/api-client'
 import { Col, Input, Row } from 'antd'
+import { useEffect, useState } from 'react'
+import { apiAddTodo, apiGetTodos } from '../api/apis-todos'
 import TodoList from '../components/TodoList'
-import { _append } from '../utils/list-utils'
 import { clientApiWrapper as $ } from '../utils/api-utils'
+import { _append } from '../utils/list-utils'
 
 export default function Main() {
   const [todos, setTodos] = useState([])
@@ -11,6 +11,7 @@ export default function Main() {
 
   useEffect(() => {
     async function fetchData() {
+      // $ - server side api call with wrapper
       const _todos = await $('apiGetTodos')
       setTodos(_todos)
     }
