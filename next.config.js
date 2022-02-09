@@ -4,4 +4,7 @@ module.exports = {
     locales: ['en', 'fr', 'nl'],
     defaultLocale: 'en',
   },
+  experimental: {
+    urlImports: ['https://gist.githubusercontent.com/varun-dev/'],
+  },
 }

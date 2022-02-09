@@ -63,7 +63,7 @@ export async function apiUpdateTodo(id, completed) {
   return updateTodo
 }
 
-export async function deleteTodo(id) {
+export async function apiDeleteTodo(id) {
   try {
     const { deleteTodo } = await graphcms.request(
       `
