@@ -18,6 +18,7 @@ export const { styled } = createStitches({
       grey50: 'hsl(0, 0%, 50%)',
       grey80: 'hsl(0, 0%, 80%)',
       grey90: 'hsl(0, 0%, 90%)',
+      grey95: 'hsl(0, 0%, 95%)',
     },
   },
   utils: {

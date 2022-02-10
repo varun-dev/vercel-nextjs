@@ -1,27 +1,12 @@
-import Table from 'antd/lib/table'
-import 'antd/lib/table/style/index.css'
-import { useEffect, useState } from 'react'
-import { DeleteFilled } from '@ant-design/icons'
+import * as Checkbox from '@radix-ui/react-checkbox'
+import { CheckIcon, CrossCircledIcon } from '@radix-ui/react-icons'
 import { apiDeleteTodo, apiUpdateTodo } from '../api/apis-todos'
-import {
-  _filterAndMap,
-  _removeBy,
-  _updateBy,
-  _eqProp,
-  _prop,
-} from '../utils/list-utils'
-
-const getSelectedKeys = todos =>
-  _filterAndMap(todos, _eqProp('completed', true), _prop('id'))
+import { Col, Row } from '../styles/grid-components'
+import { CheckboxRoot, RowTodo } from '../styles/styled-components'
+import { _removeBy, _updateBy } from '../utils/list-utils'
 
 export default function TodoList({ todos, setTodos }) {
-  const [selectedRowKeys, setSelectedRowKeys] = useState([])
-
-  useEffect(() => {
-    setSelectedRowKeys(getSelectedKeys(todos))
-  }, [todos])
-
-  const updateTodo = async ({ id }, completed) => {
+  const updateTodo = id => async completed => {
     const updated = await apiUpdateTodo(id, completed)
     setTodos(_updateBy(todos, updated, 'id', id))
   }
@@ -32,31 +17,25 @@ export default function TodoList({ todos, setTodos }) {
     await apiDeleteTodo(id)
   }
 
-  const columns = [
-    {
-      title: 'Description',
-      dataIndex: 'description',
-    },
-    {
-      render: (_, record) => <DeleteFilled onClick={deleteTodo(record.id)} />,
-      width: 50,
-    },
-  ]
-
-  const rowSelection = {
-    selectedRowKeys,
-    onSelect: updateTodo,
-  }
+  const renderTodo = ({ id, description, completed }) => (
+    <RowTodo key={id}>
+      <Col css={{ span: 2 }}>
+        <CheckboxRoot checked={completed} onCheckedChange={updateTodo(id)}>
+          <Checkbox.Indicator>
+            {completed === true && <CheckIcon />}
+          </Checkbox.Indicator>{' '}
+        </CheckboxRoot>
+      </Col>
+      <Col css={{ span: 20 }}>{description}</Col>
+      <Col css={{ span: 2 }}>
+        <CrossCircledIcon height={25} width={25} onClick={deleteTodo(id)} />
+      </Col>
+    </RowTodo>
+  )
 
   return (
-    <Table
-      rowSelection={rowSelection}
-      columns={columns}
-      dataSource={todos}
-      rowKey="id"
-      pagination={false}
-      showHeader={false}
-      style={{ width: '100%' }}
-    />
+    <Row>
+      <Col css={{ span: 24 }}> {todos.map(renderTodo)} </Col>
+    </Row>
   )
 }
