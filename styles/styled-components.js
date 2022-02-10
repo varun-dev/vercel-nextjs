@@ -31,6 +31,7 @@ export const RowInput = styled(Row, {
   padding: 5,
   borderRadius: 5,
   backgroundColor: '$grey95',
+  border: '1px solid $grey80',
 })
 
 export const RowTodo = styled(Row, {
