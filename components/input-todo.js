@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { apiAddTodo } from '../api/apis-todos'
 import { Input } from '../styles/styled-components'
-import { _append } from '../utils/list-utils'
+import { _append, _prepend } from '../utils/list-utils'
 
 export function InputTodo({ todos, setTodos, placeholder }) {
   const [todoText, setTodoText] = useState('')
@@ -11,7 +11,7 @@ export function InputTodo({ todos, setTodos, placeholder }) {
       const todo = { description: e.target.value, completed: false }
       const created = await apiAddTodo(todo)
       setTodoText('')
-      setTodos(_append(todos, created))
+      setTodos(_prepend(todos, created))
     }
   }
 

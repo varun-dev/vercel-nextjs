@@ -24,9 +24,14 @@ export const Separator = styled(RadixSeparator.Root, {
 export const Title = styled('h1', { color: '$grey50' })
 
 export const RowTodo = styled(Row, {
-  padding: 2,
+  boxSizeing: 'border-box',
+  padding: '0 5px',
+  margin: 7,
+  height: '100%',
+  borderRadius: 5,
+  backgroundColor: '$grey95',
   '&:hover': {
-    backgroundColor: '$grey95',
+    backgroundColor: '$grey90',
   },
 })
 
