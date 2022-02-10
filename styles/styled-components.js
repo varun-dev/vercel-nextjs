@@ -5,14 +5,17 @@ import { Row } from './grid-components'
 
 export const Input = styled('input', {
   fontSize: '1.2em',
-  borderRadius: 5,
-  border: '2px solid $grey50',
+  backgroundColor: 'transparent',
+  border: 'none',
   lineHeight: 2,
   width: '100%',
   boxSizing: 'border-box',
   padding: '0 5px',
   '&::-webkit-input-placeholder': {
     color: '$grey80',
+  },
+  '&:focus': {
+    outline: 'none',
   },
 })
 
@@ -23,8 +26,15 @@ export const Separator = styled(RadixSeparator.Root, {
 
 export const Title = styled('h1', { color: '$grey50', fontSize: '1.5em' })
 
+export const RowInput = styled(Row, {
+  boxSizing: 'border-box',
+  padding: 5,
+  borderRadius: 5,
+  backgroundColor: '$grey95',
+})
+
 export const RowTodo = styled(Row, {
-  boxSizeing: 'border-box',
+  boxSizing: 'border-box',
   padding: '0 5px',
   margin: 7,
   height: '100%',
