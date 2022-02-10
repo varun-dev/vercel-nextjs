@@ -28,18 +28,18 @@ export default function Main(props) {
   return (
     <Layout>
       <Header>
-        <Row css={{ height: 50 }}>
-          <Col css={{ span: 20 }}>
-            <Title>{props.page_title}</Title>
+        <Row>
+          <Col css={{ _span: 20 }}>
+            <Title css={{ lineSpacing: '2em' }}>{props.page_title}</Title>
           </Col>
-          <Col css={{ span: 4 }}>
+          <Col css={{ _span: 4 }}>
             <LocaleSwitcher />
           </Col>
         </Row>
       </Header>
       <Content>
         <Row>
-          <Col css={{ span: 12, paddingTop: 50 }}>
+          <Col css={{ width: 500, paddingTop: 50 }}>
             <InputTodo
               setTodos={setTodos}
               todos={todos}

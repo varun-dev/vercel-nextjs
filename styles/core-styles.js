@@ -23,8 +23,11 @@ export const { styled } = createStitches({
     },
   },
   utils: {
-    span: v => ({
+    _span: v => ({
       flex: `0 0 ${(v * 100) / 24}%`,
+    }),
+    _flex: v => ({
+      flex: v === 'auto' ? `1 1 ${v}` : `0 0 ${v}px`,
     }),
   },
 })

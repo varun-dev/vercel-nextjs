@@ -20,15 +20,15 @@ export default function TodoList({ todos, setTodos }) {
 
   const renderTodo = ({ id, description, completed, deleted }) => (
     <RowTodoMotion key={id} deleted={deleted}>
-      <Col css={{ span: 4 }}>
+      <Col css={{ _flex: 40 }}>
         <CheckboxRoot checked={completed} onCheckedChange={updateTodo(id)}>
           <Checkbox.Indicator>
             {completed === true && <CheckIcon />}
           </Checkbox.Indicator>
         </CheckboxRoot>
       </Col>
-      <Col css={{ span: 16 }}>{description}</Col>
-      <Col css={{ span: 4, textAlign: 'right' }}>
+      <Col css={{ _flex: 'auto' }}>{description}</Col>
+      <Col css={{ _flex: 30 }}>
         <CrossCircledIcon
           style={{ cursor: 'pointer' }}
           height={25}
@@ -41,7 +41,7 @@ export default function TodoList({ todos, setTodos }) {
 
   return (
     <Row>
-      <Col css={{ span: 24 }}> {todos.map(renderTodo)} </Col>
+      <Col css={{ _span: 24 }}> {todos.map(renderTodo)} </Col>
     </Row>
   )
 }
