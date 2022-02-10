@@ -9,7 +9,7 @@ export const Layout = styled('section', {
 
 export const Content = styled('main', {
   flex: 'auto',
-  padding: '0 20px',
+  padding: '0 10px',
   alignItems: 'center',
 })
 

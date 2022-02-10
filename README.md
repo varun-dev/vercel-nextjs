@@ -47,6 +47,7 @@ Occasionally GraphCMS can take upto 30 seconds for an update
 - styled components (ofcourse)
 - globalCss
 - createStitches (create reusable variables)
+- extending styles elements
 - utils (custom css properties). Created a 24 column css grid with a custom span property.
 
 ## Running the project
