@@ -1,6 +1,6 @@
-import { Col, Row } from 'antd'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+import { Col, Row } from '../styles/grid-components'
 
 export function LocaleSwitcher() {
   const router = useRouter()
@@ -8,7 +8,7 @@ export function LocaleSwitcher() {
   const otherLocales = locales.filter(locale => locale !== activeLocale)
 
   return (
-    <Row gutter={10}>
+    <Row>
       {otherLocales.map(locale => {
         const { pathname, query, asPath } = router
         return (
