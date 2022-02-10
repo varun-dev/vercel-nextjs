@@ -21,7 +21,7 @@ export const Separator = styled(RadixSeparator.Root, {
   height: 20,
 })
 
-export const Title = styled('h1', { color: '$grey50' })
+export const Title = styled('h1', { color: '$grey50', fontSize: '1.5em' })
 
 export const RowTodo = styled(Row, {
   boxSizeing: 'border-box',
@@ -45,4 +45,5 @@ export const CheckboxRoot = styled(RadixCheckbox.Root, {
   alignItems: 'center',
   justifyContent: 'center',
   borderRadius: 4,
+  cursor: 'pointer',
 })

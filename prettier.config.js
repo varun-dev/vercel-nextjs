@@ -7,5 +7,5 @@ module.exports = {
   bracketSpacing: true,
   jsxBracketSameLine: true,
   arrowParens: 'avoid',
-  importOrder: ['^@ant-design/(.*)$', '^[../]', '^[./]'],
+  importOrder: ['../styles/reset.css', '^@ant-design/(.*)$', '^[../]', '^[./]'],
 }

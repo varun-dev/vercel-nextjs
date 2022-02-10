@@ -20,16 +20,21 @@ export default function TodoList({ todos, setTodos }) {
 
   const renderTodo = ({ id, description, completed, deleted }) => (
     <RowTodoMotion key={id} deleted={deleted}>
-      <Col css={{ span: 2 }}>
+      <Col css={{ span: 4 }}>
         <CheckboxRoot checked={completed} onCheckedChange={updateTodo(id)}>
           <Checkbox.Indicator>
             {completed === true && <CheckIcon />}
-          </Checkbox.Indicator>{' '}
+          </Checkbox.Indicator>
         </CheckboxRoot>
       </Col>
-      <Col css={{ span: 20 }}>{description}</Col>
-      <Col css={{ span: 2 }}>
-        <CrossCircledIcon height={25} width={25} onClick={deleteTodo(id)} />
+      <Col css={{ span: 16 }}>{description}</Col>
+      <Col css={{ span: 4, textAlign: 'right' }}>
+        <CrossCircledIcon
+          style={{ cursor: 'pointer' }}
+          height={25}
+          width={25}
+          onClick={deleteTodo(id)}
+        />
       </Col>
     </RowTodoMotion>
   )

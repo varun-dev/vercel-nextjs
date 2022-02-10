@@ -39,8 +39,7 @@ export default function Main(props) {
       </Header>
       <Content>
         <Row>
-          <Col css={{ span: 12 }}>
-            <Separator />
+          <Col css={{ span: 12, paddingTop: 50 }}>
             <InputTodo
               setTodos={setTodos}
               todos={todos}

@@ -6,6 +6,7 @@ export const globalStyles = globalCss({
     fontFamily: 'Arial',
     fontSize: 16,
     color: '#333',
+    display: 'block',
   },
   div: {
     display: 'block',
