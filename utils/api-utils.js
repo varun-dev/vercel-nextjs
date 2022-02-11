@@ -1,10 +1,16 @@
 // following wrappers are for making server-side api calls
 
 // server side api call wrapper for client
-export async function clientApiWrapper(name, ...args) {
+export async function clientApiWrapper(options, ...args) {
+  let apiName = options
+  let method = 'POST'
+  if (typeof options === 'object') {
+    apiName = options.apiName
+    method = options.method
+  }
   try {
-    const response = await fetch('/api/' + name, {
-      method: 'POST',
+    const response = await fetch('/api/' + apiName, {
+      method,
       headers: {
         'Content-type': 'application/json',
       },
@@ -24,10 +30,10 @@ export async function clientApiWrapper(name, ...args) {
 
 // server side api call wrapper for server
 export function serverApiWrapper(fn) {
-  return async ({ body: { args } }, res) => {
+  return async ({ method, body: { args } }, res) => {
     let result = {}
     try {
-      result = await fn(...args)
+      result = await fn(...args, method)
       res.status(200).json(result)
     } catch (e) {
       if (e.status) res.status(e.status).json(e.error)
