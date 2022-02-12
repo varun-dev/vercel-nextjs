@@ -10,10 +10,10 @@ const handlers = {
     return { id, windos }
   },
   PUT: ({ username, id, windo }) => {
-    addWindo(username, id, windo)
+    return addWindo(username, id, windo)
   },
   DELETE: ({ username, id }) => {
-    removeWindo(username, id)
+    return removeWindo(username, id)
   },
 }
 

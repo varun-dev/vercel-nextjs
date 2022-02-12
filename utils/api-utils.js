@@ -1,6 +1,6 @@
-// following wrappers are for making server-side api calls
+// following wrappers are for making server-side _apis calls
 
-// server side api call wrapper for client
+// server side _apis call wrapper for client
 export async function clientApiWrapper(options, ...args) {
   let apiName = options
   let method = 'POST'
@@ -21,20 +21,19 @@ export async function clientApiWrapper(options, ...args) {
       return data
     } else {
       console.error('API error', data.errors)
-      throw data
     }
   } catch (error) {
-    throw error
+    console.error(error)
   }
 }
 
-// server side api call wrapper for server
+// server side _apis call wrapper for server
 export function serverApiWrapper(fn) {
   return async ({ method, body: { args } }, res) => {
-    let result = {}
     try {
-      result = await fn(...args, method)
-      res.status(200).json(result)
+      const result = await fn(...args, method)
+      // console.log('returnig result', result)
+      res.status(200).json(result || {})
     } catch (e) {
       if (e.status) res.status(e.status).json(e.error)
     }

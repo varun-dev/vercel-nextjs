@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { apiGetCopies } from '../api/apis-todos'
+import { apiGetCopies } from '../_apis/apis-todos'
 import { InputTodo } from '../components/input-todo'
 import { LocaleSwitcher } from '../components/locale-switcher'
 import TodoList from '../components/todo-list'
@@ -18,7 +18,7 @@ export default function Main(props) {
 
   useEffect(() => {
     async function fetchData() {
-      // $ - server side api call with wrapper
+      // $ - server side _apis call with wrapper
       const _todos = await $('apiGetTodos')
       setTodos(_todos)
     }

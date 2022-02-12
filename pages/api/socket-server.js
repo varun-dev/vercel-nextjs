@@ -1,5 +1,5 @@
-import { Server } from 'Socket.IO'
-import { getWindos, removeWindo } from '../../windoo/server-store'
+import { Server } from 'socket.io'
+import { removeWindo } from '../../windoo/server-store'
 
 const SocketHandler = (req, res) => {
   console.log('SocketHandler')

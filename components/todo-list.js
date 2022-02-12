@@ -1,6 +1,6 @@
 import * as Checkbox from '@radix-ui/react-checkbox'
 import { CheckIcon, CrossCircledIcon } from '@radix-ui/react-icons'
-import { apiDeleteTodo, apiUpdateTodo } from '../api/apis-todos'
+import { apiDeleteTodo, apiUpdateTodo } from '../_apis/apis-todos'
 import { Col, Row } from '../styles/grid-components'
 import { RowTodoMotion } from '../styles/motion-components'
 import { CheckboxRoot } from '../styles/styled-components'
