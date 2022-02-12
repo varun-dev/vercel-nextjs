@@ -19,6 +19,7 @@ export function DialogQR(props) {
   const url = href.indexOf('token=') > 0 ? href : `${href}?token=${username}`
 
   useEffect(() => {
+    if (!username) return
     const generateQR = async text => {
       try {
         setQRImage(await QRCode.toDataURL(url))
@@ -27,7 +28,7 @@ export function DialogQR(props) {
       }
     }
     generateQR()
-  }, [])
+  }, [username])
 
   return (
     <Dialog open={props.open} onClose={props.onClose}>
