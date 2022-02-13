@@ -72,7 +72,7 @@ function getMainContentTabset(pos) {
         weight: 50,
         selected: 0,
         id: 'contentTabset',
-        children: [getTab(pos, pos * 2)],
+        children: [getTab(pos, pos * 2), getEmptyTab()],
       },
       {
         type: 'tabset',

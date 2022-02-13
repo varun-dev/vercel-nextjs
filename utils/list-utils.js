@@ -11,6 +11,7 @@ export {
   _removeBy,
   _updateBy,
   _eqProp,
+  _neProp,
   _prop,
   _prepend,
   _keyValues,

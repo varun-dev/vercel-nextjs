@@ -1,15 +1,25 @@
-import generateToken from 'crypto-random-string'
+import { initializeApp } from 'firebase/app'
+import {
+  child,
+  get,
+  getDatabase,
+  onValue,
+  ref,
+  set,
+  update,
+} from 'firebase/database'
 import { Actions, DockLocation, Layout, Model } from 'flexlayout-react'
 import 'flexlayout-react/style/light.css'
-import { isNumber, pick, size } from 'lodash'
+import { isNumber, omit, pick, size } from 'lodash'
 import { useRouter } from 'next/router'
-import { createContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Col, Row } from '../styles/grid-components'
-import { clientApiWrapper as $ } from '../utils/api-utils'
 import { Header } from '../windoo/components/Header'
 import { getTabConfig, UserContext } from '../windoo/config'
-import { initialiseSocket, sendMessage } from '../windoo/socket-client'
+import { firebaseConfig } from '../windoo/firebase'
+import { $username, $windoId, log } from '../windoo/helpers'
 
+let db
 export default function Windoo() {
   const [windoId, setWindoId] = useState('')
   const [pos, setPos] = useState(0)
@@ -19,73 +29,97 @@ export default function Windoo() {
 
   const router = useRouter()
 
-  const onWindoChange = windos => {
-    console.log('changedWindows', windos)
-  }
-
   useEffect(() => {
-    let _username
     const init = async () => {
       if (!router.isReady) return
-      function _storedUsername(value) {
-        if (value) {
-          window.localStorage.setItem('_username', value)
-        } else {
-          return window.localStorage.getItem('_username')
+      const username = $username(window, router)
+      const windoId = $windoId(window)
+      const app = initializeApp(firebaseConfig)
+      db = getDatabase(app)
+      const dbRef = ref(db)
+      const snapshot = await get(child(dbRef, 'windos/' + username))
+      let windos = snapshot.val() || {}
+      // log('Windos', windos)
+      let windo = windos[windoId]
+      let pos
+      let config
+      if (!windo) {
+        pos = size(windos) + 1
+        config = getTabConfig(pos)
+        const newWindow = {
+          [windoId]: { pos, config, windoId, message: {} },
         }
+        await update(ref(db, 'windos/' + username), newWindow)
+        windos = { ...windos, ...newWindow }
+      } else {
+        config = windo.config
+        pos = windo.pos
       }
-      const { token } = router.query
-      _username =
-        token ||
-        _storedUsername() ||
-        generateToken({ length: 6, type: 'distinguishable' })
-      _storedUsername(_username)
-      const { id, windos } = await $('apiWindoo', { username: _username })
-      const pos = size(windos)
-      setWindoId(id)
+      log('username', username, 'pos', pos, 'windos', windos)
+      setWindoId(windoId)
       setPos(pos)
-      setModel(Model.fromJson(getTabConfig(pos)))
-      setUsername(_username)
+      setModel(Model.fromJson(config))
+      setUsername(username)
       setWindos(windos)
-      console.log('username', _username)
       document.title = `Windoo ${pos}`
     }
     init().then(r => {})
-    return async () =>
-      await $(
-        { apiName: 'apiWindoo', method: 'DELETE' },
-        { username: _username }
-      )
-  }, [router.isReady, router.query])
+    return async () => {}
+  }, [router, router.isReady])
 
   useEffect(() => {
     if (!model || !windoId || !username) return
-    const onNewWindo = windo => {
-      console.log('onNewWindo', windo)
+
+    const windosRef = ref(db, `windos/${username}`)
+    onValue(windosRef, snapshot => {
+      const newWindos = snapshot.val()
+      setWindos(newWindos)
+    })
+
+    const tabRef = ref(db, `windos/${username}/${windoId}/message`)
+    onValue(tabRef, snapshot => {
+      const newTab = snapshot.val()
+      if (!newTab) return
       try {
         model.doAction(
-          Actions.addNode(windo, 'contentTabset', DockLocation.CENTER, 0, true)
+          Actions.addNode(newTab, 'contentTabset', DockLocation.CENTER, 0)
         )
+        set(ref(db, `windos/${username}/${windoId}/message`), null)
       } catch (e) {
-        //todo:
+        log('newTab already exists', newTab)
       }
-    }
-    initialiseSocket({ username, id: windoId }, { onWindoChange, onNewWindo })
+    })
   }, [model, windoId, username])
 
   const onContextMenu = ({ _attributes }, e) => {
     e.preventDefault()
-    // console.log('onContextMenu', _attributes)
+    // log('onContextMenu', _attributes)
     if (_attributes.type === 'tab' && _attributes.id !== 'emptyTab') {
-      const windo = pick(_attributes, [
+      const tab = pick(_attributes, [
         'id',
         'type',
         'component',
         'name',
         'config',
       ])
-      model.doAction(Actions.deleteTab(windo.id))
-      sendMessage('move-window', windo)
+      // model.doAction(Actions.deleteTab(windo.id))
+      const otherWindos = omit(windos, windoId)
+      // log(
+      //   'windos',
+      //   windos,
+      //   '\notherWindos',
+      //   otherWindos,
+      //   '\nwindoId',
+      //   windoId
+      // )
+      if (size(otherWindos) === 1) {
+        const id = Object.keys(otherWindos)[0]
+        // const targetWindow = otherWindos[id]
+        set(ref(db, `windos/${username}/${id}/message`), tab)
+        model.doAction(Actions.deleteTab(tab.id))
+      } else {
+        log('No other window')
+      }
     }
   }
 
