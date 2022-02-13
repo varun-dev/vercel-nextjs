@@ -15,7 +15,13 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { Col, Row } from '../styles/grid-components'
 import { Header } from '../windoo/components/Header'
-import { getTabConfig, UserContext } from '../windoo/config'
+import {
+  defaultStyles,
+  getMagicTab,
+  getTabConfig,
+  UserContext,
+  WindoContext,
+} from '../windoo/config'
 import { firebaseConfig } from '../windoo/firebase'
 import { $username, $windoId, log } from '../windoo/helpers'
 
@@ -123,13 +129,29 @@ export default function Windoo() {
     }
   }
 
+  const sendWindo = () => {
+    const tab = getMagicTab(pos)
+    console.log('enterig sendWindo', tab)
+    const otherWindos = omit(windos, windoId)
+    if (size(otherWindos) === 1) {
+      const id = Object.keys(otherWindos)[0]
+      // const targetWindow = otherWindos[id]
+      set(ref(db, `windos/${username}/${id}/message`), tab)
+      model.doAction(Actions.deleteTab(tab.id))
+    } else {
+      log('No other window')
+    }
+  }
+
   return !model ? null : (
     <UserContext.Provider value={username}>
-      <Layout
-        model={model}
-        factory={factory.bind({ pos })}
-        onContextMenu={onContextMenu}
-      />
+      <WindoContext.Provider value={sendWindo}>
+        <Layout
+          model={model}
+          factory={factory.bind({ pos })}
+          onContextMenu={onContextMenu}
+        />
+      </WindoContext.Provider>
     </UserContext.Provider>
   )
 }
@@ -137,31 +159,28 @@ export default function Windoo() {
 function factory(node) {
   const Component = node.getComponent()
   let children
-  let backgroundColor = '#fff'
   const config = node.getConfig()
 
-  if (Component === 'Header') return <Header />
+  if (Component === 'Header')
+    return <Header isMain={config && config.pos === 1} />
   if (config && Component === 'tab') {
-    backgroundColor = getColor(config.tab)
     children = (
       <span>
-        <span>Windo {config.pos}</span>
-        <br />
-        <span>Tab {config.tab}</span>
+        <span>
+          App {config.pos}
+          {config.tab}
+        </span>
       </span>
     )
   } else {
     children = Component
   }
+  const style = (config && config.style) || defaultStyles
   return (
-    <Row css={{ height: '100%', backgroundColor }}>
-      <Col css={{ fontSize: '5em' }}>{children}</Col>
+    <Row css={{ height: '100%', ...style }}>
+      <Col css={{ fontSize: '3em' }}>{children}</Col>
     </Row>
   )
-}
-
-function getColor(n) {
-  return isNumber(n) ? `hsl(${n * 50}0,50%,50%)` : '#fff'
 }
 
 function getRandomColor(n) {

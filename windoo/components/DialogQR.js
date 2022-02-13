@@ -30,6 +30,11 @@ export function DialogQR(props) {
     generateQR()
   }, [username])
 
+  const onClose = () => {
+    setCopied(false)
+    props.onClose()
+  }
+
   return (
     <Dialog open={props.open} onClose={props.onClose}>
       <DialogTitle>Get Link</DialogTitle>
@@ -47,11 +52,17 @@ export function DialogQR(props) {
             </CopyToClipboard>
           </Col>
         </Row>
-
-        <img src={qrImage} />
+        <Row>
+          <Col css={{ _flex: 'auto' }}>
+            <img src={qrImage} />
+          </Col>
+          {copied && (
+            <Col css={{ _flex: 60, fontSize: 12 }}>Copied to clipboard</Col>
+          )}
+        </Row>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.onClose}>Ok</Button>
+        <Button onClick={onClose}>Ok</Button>
       </DialogActions>
     </Dialog>
   )

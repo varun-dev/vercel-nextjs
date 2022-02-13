@@ -1,17 +1,22 @@
+import { isNumber } from 'lodash'
 import { createContext } from 'react'
 
 export const UserContext = createContext({ username: '' })
+export const WindoContext = createContext({})
 
 export const getTabConfig = pos => ({
   global: { tabEnableClose: false },
-  borders: [
-    {
-      type: 'border',
-      location: 'left',
-      size: 100,
-      children: [getTab(pos, 0)],
-    },
-  ],
+  // borders:
+  //   pos === 1
+  //     ? [
+  //         {
+  //           type: 'border',
+  //           location: 'left',
+  //           size: 100,
+  //           children: [getTab(pos, 0)],
+  //         },
+  //       ]
+  //     : [],
   layout: {
     type: 'row',
     weight: 100,
@@ -31,16 +36,17 @@ function getTab(pos, tab, enableDrag = true) {
     name: 'App Window',
     component: 'tab',
     enableDrag,
-    config: { pos, tab },
+    config: { pos, tab, style: { backgroundColor: getColor(tab) } },
   }
 }
 
-function getHeaderTab() {
+function getHeaderTab(pos) {
   return {
     type: 'tab',
     name: 'Header',
     component: 'Header',
     enableDrag: false,
+    config: { pos },
   }
 }
 
@@ -55,11 +61,25 @@ function getHeaderTabset(pos) {
     enableMaximize: false,
     enableClose: false,
     enableTabStrip: false,
-    children: [getHeaderTab()],
+    children: [getHeaderTab(pos)],
   }
 }
 function getContentTabset(pos) {
   return pos > 1 ? getEmptyTabset(pos) : getMainContentTabset(pos)
+}
+
+export function getMagicTab(pos) {
+  return {
+    type: 'tab',
+    name: 'Magic Tab',
+    component: 'Magic App',
+    id: 'magicTab',
+    config: {
+      pos,
+      tab: 1,
+      style: { backgroundColor: 'purple', color: 'white' },
+    },
+  }
 }
 
 function getMainContentTabset(pos) {
@@ -72,7 +92,7 @@ function getMainContentTabset(pos) {
         weight: 50,
         selected: 0,
         id: 'contentTabset',
-        children: [getTab(pos, pos * 2), getEmptyTab()],
+        children: [getMagicTab(pos), getEmptyTab()],
       },
       {
         type: 'tabset',
@@ -99,12 +119,18 @@ function getEmptyTabset(pos) {
     ],
   }
 }
+
 function getEmptyTab() {
   return {
     type: 'tab',
     id: 'emptyTab',
     name: 'Empty',
-    component: 'Send window from main window',
+    component: 'Empty Window',
     enableDrag: false,
   }
 }
+
+function getColor(n) {
+  return isNumber(n) ? `hsl(${n * 50}0,50%,50%)` : '#fff'
+}
+export const defaultStyles = { backgroundColor: 'white' }
