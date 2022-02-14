@@ -8,6 +8,7 @@ import {
   factory,
   getMagicTab,
   getTabConfig,
+  magicTab,
   UserContext,
   WindoContext,
 } from '../windoo/config'
@@ -23,20 +24,6 @@ export default function Windoo() {
   const [windos, setWindos] = useState([])
   const [model, setModel] = useState()
 
-  const logState = () =>
-    log(
-      'username',
-      username,
-      '\nwindoId',
-      windoId,
-      '\npos',
-      pos,
-      '\nwindos',
-      windos,
-      '\nmodel',
-      model
-    )
-
   const router = useRouter()
 
   useEffect(() => {
@@ -46,6 +33,7 @@ export default function Windoo() {
       const windoId = $windoId(window)
       // log(username, windoId)
       const { pos, config, windos } = await initaliseWindow(username, windoId)
+      magicTab(pos === 1)
       setWindoId(windoId)
       setPos(pos)
       // console.log('after initaliseWindow', pos, config, windos)
@@ -75,19 +63,21 @@ export default function Windoo() {
     return () => destroy.forEach(fn => fn())
   }, [model, windoId, username])
 
-  const onContextMenu = ({ _attributes }, e) => {
-    e.preventDefault()
-    // log('onContextMenu', _attributes)
-    if (_attributes.type === 'tab' && _attributes.id !== 'emptyTab') {
-      const tab = pick(_attributes, tabAttributes)
-      actionSendWindo(username, windos, windoId, model, tab)
-    }
-  }
+  // const onContextMenu = ({ _attributes }, e) => {
+  //   e.preventDefault()
+  //   // log('onContextMenu', _attributes)
+  //   if (_attributes.type === 'tab' && _attributes.id !== 'emptyTab') {
+  //     const tab = pick(_attributes, tabAttributes)
+  //     actionSendWindo(username, windos, windoId, model, tab)
+  //   }
+  // }
 
   const sendWindo = targetWindoId => () => {
+    if (!magicTab()) return
     const tab = getMagicTab(pos)
     actionSendWindo(username, windos, targetWindoId, tab)
     model.doAction(Actions.deleteTab(tab.id))
+    magicTab(false)
   }
 
   if (!model || !username || !pos) {
@@ -103,9 +93,24 @@ export default function Windoo() {
         <Layout
           model={model}
           factory={factory.bind({ pos })}
-          onContextMenu={onContextMenu}
+          // onContextMenu={onContextMenu}
         />
       </WindoContext.Provider>
     </UserContext.Provider>
   )
+
+  function logState() {
+    log(
+      'username',
+      username,
+      '\nwindoId',
+      windoId,
+      '\npos',
+      pos,
+      '\nwindos',
+      windos,
+      '\nmodel',
+      model
+    )
+  }
 }

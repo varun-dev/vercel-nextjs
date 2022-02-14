@@ -6,6 +6,12 @@ import { Header } from './components/Header'
 export const UserContext = createContext({ username: '' })
 export const WindoContext = createContext({})
 
+let _magicTab = false
+export const magicTab = value => {
+  if (value === undefined) return _magicTab
+  _magicTab = value
+}
+
 export const getTabConfig = pos => ({
   global: { tabEnableClose: false },
   // borders:

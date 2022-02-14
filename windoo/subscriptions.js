@@ -1,5 +1,6 @@
 import { onValue, ref, set } from 'firebase/database'
 import { db } from './actions'
+import { magicTab } from './config'
 
 export function onNewWindos(username, fn) {
   return onValue(ref(db, `windos/${username}`), snapshot => {
@@ -25,6 +26,7 @@ export function onNewTab(username, windoId, fn) {
     const newTab = snapshot.val()
     // console.log('On new tab', newTab)
     if (!newTab) return null
+    magicTab(true)
     fn(newTab)
     set(ref(db, `windos/${username}/${windoId}/message`), null)
   })
