@@ -3,18 +3,23 @@ import {
   child,
   get,
   getDatabase,
-  onValue,
+  onDisconnect,
   ref,
   set,
   update,
 } from 'firebase/database'
-import { Actions } from 'flexlayout-react'
-import { omit, size } from 'lodash'
+import { size } from 'lodash'
 import { getTabConfig } from './config'
 import { firebaseConfig } from './firebase'
-import { log } from './helpers'
+import { deviceType, log } from './helpers'
 
-let db
+export let db
+
+export const STATUS = {
+  CONNECTED: 'CONNECTED',
+  DISCONNECTED: 'DISCONNECTED',
+  INACTIVE: 'INACTIVE',
+}
 
 export async function initialiseApp(username) {
   const app = initialiseFirebaseApp(firebaseConfig)
@@ -24,9 +29,9 @@ export async function initialiseApp(username) {
   return snapshot.val() || {}
 }
 
-export const actionSendWindo = (username, windos, windoId, model, tab) => {
-  // console.log('enterig sendWindo', tab)
-  const otherWindos = omit(windos, windoId)
+export const actionSendWindo = (username, windos, targetWindoId, tab) => {
+  // log('Sending tab to', targetWindoId, tab)
+  // const { windoId } = find(windos, { windoId: targetWindoId })
   // log(
   //   'windos',
   //   windos,
@@ -36,14 +41,12 @@ export const actionSendWindo = (username, windos, windoId, model, tab) => {
   //   windoId
   // )
 
-  if (size(otherWindos) === 1) {
-    const id = Object.keys(otherWindos)[0]
-    // const targetWindow = otherWindos[id]
-    set(ref(db, `windos/${username}/${id}/message`), tab)
-    model.doAction(Actions.deleteTab(tab.id))
-  } else {
-    log('No other window')
-  }
+  // const targetWindow = otherWindos[id]
+  set(ref(db, `windos/${username}/${targetWindoId}/message`), tab)
+    .then(result => {
+      // log('After setting tab', result)
+    })
+    .catch(e => console.error(e))
 }
 
 export async function initaliseWindow(username, windoId) {
@@ -51,33 +54,48 @@ export async function initaliseWindow(username, windoId) {
   let windo = windos[windoId]
   let pos
   let config
-  if (!windo) {
+  if (!windo || !windo.config) {
     pos = size(windos) + 1
     config = getTabConfig(pos)
     const newWindow = {
-      [windoId]: { pos, config, windoId, message: {} },
+      [windoId]: {
+        pos,
+        config,
+        windoId,
+        message: {},
+        status: STATUS.CONNECTED,
+        deviceType,
+      },
     }
+    // console.log('db: creating new windo', newWindow)
     await update(ref(db, 'windos/' + username), newWindow)
     windos = { ...windos, ...newWindow }
   } else {
     config = windo.config
     pos = windo.pos
+    await setStatus(username, windoId, STATUS.CONNECTED)
   }
+  const windoStatusRef = ref(db, `windos/${username}/${windoId}/status`)
+  await onDisconnect(windoStatusRef).set('DISCONNECTED')
+
+  document.addEventListener('visibilitychange', function (event) {
+    const status = document.hidden ? STATUS.INACTIVE : STATUS.CONNECTED
+    setStatus(username, windoId, status)
+  })
   return { config, pos, windos }
 }
 
-export function onNewWindos(username, fn) {
-  onValue(ref(db, `windos/${username}`), snapshot => {
-    const newWindos = snapshot.val()
-    fn(newWindos)
-  })
-}
-
-export function onNewTab(username, windoId) {
-  const tabRef = ref(db, `windos/${username}/${windoId}/message`)
-  onValue(tabRef, snapshot => {
-    const newTab = snapshot.val()
-    if (!newTab) return null
-    set(ref(db, `windos/${username}/${windoId}/message`), null)
-  })
+async function setStatus(username, windoId, status) {
+  if (!username || !windoId || !status) {
+    // log('Retuning from setStatus')
+    return
+  }
+  try {
+    const windoStatusRef = ref(db, `windos/${username}/${windoId}/status`)
+    // log(
+    //   'db: setting status for existing window, key:',
+    //   windoStatusRef.key
+    // )
+    await set(windoStatusRef, status)
+  } catch (e) {}
 }

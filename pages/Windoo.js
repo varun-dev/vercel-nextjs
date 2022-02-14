@@ -3,19 +3,16 @@ import 'flexlayout-react/style/light.css'
 import { pick } from 'lodash'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import {
-  actionSendWindo,
-  initaliseWindow,
-  onNewTab,
-  onNewWindos,
-} from '../windoo/actions'
+import { actionSendWindo, initaliseWindow } from '../windoo/actions'
 import {
   factory,
   getMagicTab,
+  getTabConfig,
   UserContext,
   WindoContext,
 } from '../windoo/config'
 import { $username, $windoId, log } from '../windoo/helpers'
+import { onNewTab, onNewWindos } from '../windoo/subscriptions'
 
 const tabAttributes = ['id', 'type', 'component', 'name', 'config']
 
@@ -47,11 +44,12 @@ export default function Windoo() {
       if (!router.isReady) return
       const username = $username(window, router)
       const windoId = $windoId(window)
+      // log(username, windoId)
       const { pos, config, windos } = await initaliseWindow(username, windoId)
-
       setWindoId(windoId)
       setPos(pos)
-      setModel(Model.fromJson(config))
+      // console.log('after initaliseWindow', pos, config, windos)
+      setModel(Model.fromJson(config || getTabConfig(pos)))
       setUsername(username)
       setWindos(windos)
       document.title = `Windoo ${pos}`
@@ -62,15 +60,19 @@ export default function Windoo() {
 
   useEffect(() => {
     if (!model || !windoId || !username) return
-    onNewWindos(username, setWindos)
-    onNewTab(username, windoId, newTab => {
-      if (!newTab) return
-      try {
-        model.doAction(
-          Actions.addNode(newTab, 'contentTabset', DockLocation.CENTER, 0)
-        )
-      } catch (e) {}
-    })
+    const destroy = []
+    destroy.push(onNewWindos(username, setWindos))
+    destroy.push(
+      onNewTab(username, windoId, newTab => {
+        if (!newTab) return
+        try {
+          model.doAction(
+            Actions.addNode(newTab, 'contentTabset', DockLocation.CENTER, 0)
+          )
+        } catch (e) {}
+      })
+    )
+    return () => destroy.forEach(fn => fn())
   }, [model, windoId, username])
 
   const onContextMenu = ({ _attributes }, e) => {
@@ -82,8 +84,10 @@ export default function Windoo() {
     }
   }
 
-  const sendWindo = () => {
-    actionSendWindo(username, windos, windoId, model, getMagicTab(pos))
+  const sendWindo = targetWindoId => () => {
+    const tab = getMagicTab(pos)
+    actionSendWindo(username, windos, targetWindoId, tab)
+    model.doAction(Actions.deleteTab(tab.id))
   }
 
   if (!model || !username || !pos) {
@@ -95,7 +99,7 @@ export default function Windoo() {
 
   return (
     <UserContext.Provider value={username}>
-      <WindoContext.Provider value={sendWindo}>
+      <WindoContext.Provider value={{ sendWindo, windos, windoId }}>
         <Layout
           model={model}
           factory={factory.bind({ pos })}

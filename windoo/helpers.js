@@ -1,4 +1,8 @@
 import generateToken from 'crypto-random-string'
+import UAParser from 'ua-parser-js'
+
+export const { type } = new UAParser().getDevice()
+export const deviceType = type || 'Desktop'
 
 const isDebug = process.env.NEXT_PUBLIC_DEVMODE === 'true'
 
@@ -23,3 +27,5 @@ export function $windoId(window) {
 export function log(...args) {
   if (isDebug) console.log(...args)
 }
+
+export function getOtherWindos(windos, id) {}
