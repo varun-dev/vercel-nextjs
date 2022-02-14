@@ -1,5 +1,7 @@
 import { isNumber } from 'lodash'
 import { createContext } from 'react'
+import { Col, Row } from '../styles/grid-components'
+import { Header } from './components/Header'
 
 export const UserContext = createContext({ username: '' })
 export const WindoContext = createContext({})
@@ -134,3 +136,30 @@ function getColor(n) {
   return isNumber(n) ? `hsl(${n * 50}0,50%,50%)` : '#fff'
 }
 export const defaultStyles = { backgroundColor: 'white' }
+
+export function factory(node) {
+  const Component = node.getComponent()
+  let children
+  const config = node.getConfig()
+
+  if (Component === 'Header')
+    return <Header isMain={config && config.pos === 1} />
+  if (config && Component === 'tab') {
+    children = (
+      <span>
+        <span>
+          App {config.pos}
+          {config.tab}
+        </span>
+      </span>
+    )
+  } else {
+    children = Component
+  }
+  const style = (config && config.style) || defaultStyles
+  return (
+    <Row css={{ height: '100%', ...style }}>
+      <Col css={{ fontSize: '3em' }}>{children}</Col>
+    </Row>
+  )
+}
