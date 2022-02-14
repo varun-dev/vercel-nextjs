@@ -1,6 +1,5 @@
 import { Actions, DockLocation, Layout, Model } from 'flexlayout-react'
 import 'flexlayout-react/style/light.css'
-import { pick } from 'lodash'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import { actionSendWindo, initaliseWindow } from '../windoo/actions'

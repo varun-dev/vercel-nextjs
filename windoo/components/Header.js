@@ -1,5 +1,5 @@
 import { Laptop, PhoneIphone, Share, TabletMac } from '@mui/icons-material'
-import { forEach, map, pickBy, size } from 'lodash'
+import { map, pickBy, size } from 'lodash'
 import { useContext, useEffect, useState } from 'react'
 import { Col, Row } from '../../styles/grid-components'
 import { mapObject } from '../../utils/list-utils'
@@ -10,11 +10,9 @@ import { onStatusChange } from '../subscriptions'
 import { DialogQR } from './DialogQR'
 
 const icon = {
-  style: {
-    height: 50,
-    width: 50,
-    cursor: 'pointer',
-  },
+  height: 50,
+  width: 50,
+  cursor: 'pointer',
 }
 
 export function Header({ isMain }) {
@@ -24,21 +22,6 @@ export function Header({ isMain }) {
   const [openQR, setOpenQR] = useState(false)
   const [otherWindos, setOtherWindos] = useState({})
   const [statuses, setStatuses] = useState({})
-
-  const logState = () => {
-    log(
-      'username',
-      username,
-      '\nwindoId',
-      windoId,
-      '\notherWindos',
-      otherWindos,
-      '\nwindos',
-      windos,
-      '\nstatuses',
-      statuses
-    )
-  }
 
   useEffect(() => {
     if (!windoId || !windos || size(windos) === 0 || !username) return
@@ -68,28 +51,30 @@ export function Header({ isMain }) {
   // logState()
   return (
     <Row css={{ height: '100%' }}>
-      <Col css={{ fontSize: '2em', _flex: 'auto' }}>Windoo</Col>
+      <Col css={{ fontSize: '2em', _flex: 'auto' }}>
+        {isMain && 'Main '}Windoo
+      </Col>
       {size(otherWindos) > 0 &&
         map(otherWindos, (w, i) => {
           const props =
             statuses[w.windoId] === STATUS.INACTIVE
               ? { color: 'disabled' }
               : { onClick: sendWindo(w.windoId) }
-          const Icon =
+          const [Icon, height, _flex] =
             w.deviceType === 'mobile'
-              ? PhoneIphone
+              ? [PhoneIphone, 37, 50]
               : w.deviceType === 'tablet'
-              ? TabletMac
-              : Laptop
+              ? [TabletMac, 35, 50]
+              : [Laptop, 50, 60]
           return (
-            <Col key={i} css={{ _flex: 60 }}>
-              <Icon {...icon} {...props} />
+            <Col key={i} css={{ _flex }}>
+              <Icon style={{ ...icon, height }} {...props} />
             </Col>
           )
         })}
       {!isMain ? null : (
         <Col key="icon1" css={{ _flex: 60 }}>
-          <Share {...icon} onClick={handleOpenQR} />
+          <Share style={{ ...icon, height: 44 }} onClick={handleOpenQR} />
           <DialogQR open={openQR} onClose={handleClose} />
         </Col>
       )}
@@ -99,4 +84,19 @@ export function Header({ isMain }) {
       {/*</Col>*/}
     </Row>
   )
+
+  function logState() {
+    log(
+      'username',
+      username,
+      '\nwindoId',
+      windoId,
+      '\notherWindos',
+      otherWindos,
+      '\nwindos',
+      windos,
+      '\nstatuses',
+      statuses
+    )
+  }
 }

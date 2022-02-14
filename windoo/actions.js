@@ -11,7 +11,7 @@ import {
 import { size } from 'lodash'
 import { getTabConfig } from './config'
 import { firebaseConfig } from './firebase'
-import { deviceType, log } from './helpers'
+import { deviceType } from './helpers'
 
 export let db
 
