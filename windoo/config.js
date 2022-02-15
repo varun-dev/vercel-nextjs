@@ -1,7 +1,7 @@
 import { isNumber } from 'lodash'
 import { createContext } from 'react'
 import { Col, Row } from '../styles/grid-components'
-import { Header } from './components/Header'
+import { Header } from '../components/Header'
 
 export const UserContext = createContext({ username: '' })
 export const WindoContext = createContext({})

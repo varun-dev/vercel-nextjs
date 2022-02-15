@@ -8,8 +8,9 @@ import DialogTitle from '@mui/material/DialogTitle'
 import QRCode from 'qrcode'
 import { useContext, useEffect, useState } from 'react'
 import { CopyToClipboard } from 'react-copy-to-clipboard'
-import { Col, Row } from '../../styles/grid-components'
-import { UserContext } from '../config'
+import { Col, Row } from '../styles/grid-components'
+import { UserContext } from '../windoo/config'
+import Img from 'next/image'
 
 export function DialogQR(props) {
   const [qrImage, setQRImage] = useState('')
@@ -28,7 +29,7 @@ export function DialogQR(props) {
       }
     }
     generateQR()
-  }, [username])
+  }, [username, url])
 
   const onClose = () => {
     setCopied(false)
@@ -54,7 +55,7 @@ export function DialogQR(props) {
         </Row>
         <Row>
           <Col css={{ _flex: 'auto' }}>
-            <img src={qrImage} />
+            <Img src={qrImage} alt='Url QR'/>
           </Col>
           {copied && (
             <Col css={{ _flex: 60, fontSize: 12 }}>Copied to clipboard</Col>

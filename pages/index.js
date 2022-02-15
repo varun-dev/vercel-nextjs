@@ -1,55 +1,115 @@
+import { Actions, DockLocation, Layout, Model } from 'flexlayout-react'
+import 'flexlayout-react/style/light.css'
+import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
-import { apiGetCopies } from '../_apis/apis-todos'
-import { InputTodo } from '../components/input-todo'
-import { LocaleSwitcher } from '../components/locale-switcher'
-import TodoList from '../components/todo-list'
-import { Col, Content, Header, Layout, Row } from '../styles/grid-components'
-import { Separator, Title } from '../styles/styled-components'
-import { clientApiWrapper as $ } from '../utils/api-utils'
-import { _keyValues } from '../utils/list-utils'
+import { actionSendWindo, initaliseWindow } from '../windoo/actions'
+import {
+  factory,
+  getMagicTab,
+  getTabConfig,
+  magicTab,
+  UserContext,
+  WindoContext,
+} from '../windoo/config'
+import { $username, $windoId, log } from '../windoo/helpers'
+import { onNewTab, onNewWindos } from '../windoo/subscriptions'
 
-export async function getServerSideProps({ locale }) {
-  const data = await apiGetCopies(locale)
-  return { props: _keyValues(data, 'key', 'copy') }
-}
+const tabAttributes = ['id', 'type', 'component', 'name', 'config']
 
-export default function Main(props) {
-  const [todos, setTodos] = useState([])
+export default function Index() {
+  const [username, setUsername] = useState()
+  const [windoId, setWindoId] = useState('')
+  const [pos, setPos] = useState(0)
+  const [windos, setWindos] = useState([])
+  const [model, setModel] = useState()
+
+  const router = useRouter()
 
   useEffect(() => {
-    async function fetchData() {
-      // $ - server side _apis call with wrapper
-      const _todos = await $('apiGetTodos')
-      setTodos(_todos)
+    const init = async () => {
+      if (!router.isReady) return
+      const username = $username(window, router)
+      const windoId = $windoId(window)
+      // log(username, windoId)
+      const { pos, config, windos } = await initaliseWindow(username, windoId)
+      magicTab(pos === 1)
+      setWindoId(windoId)
+      setPos(pos)
+      // console.log('after initaliseWindow', pos, config, windos)
+      setModel(Model.fromJson(config || getTabConfig(pos)))
+      setUsername(username)
+      setWindos(windos)
+      document.title = `Windoo ${pos}`
     }
-    fetchData()
-  }, [])
+    init().then(() => {})
+    return () => {}
+  }, [router, router.isReady])
+
+  useEffect(() => {
+    if (!model || !windoId || !username) return
+    const destroy = []
+    destroy.push(onNewWindos(username, setWindos))
+    destroy.push(
+      onNewTab(username, windoId, newTab => {
+        if (!newTab) return
+        try {
+          model.doAction(
+            Actions.addNode(newTab, 'contentTabset', DockLocation.CENTER, 0)
+          )
+        } catch (e) {}
+      })
+    )
+    return () => destroy.forEach(fn => fn())
+  }, [model, windoId, username])
+
+  // const onContextMenu = ({ _attributes }, e) => {
+  //   e.preventDefault()
+  //   // log('onContextMenu', _attributes)
+  //   if (_attributes.type === 'tab' && _attributes.id !== 'emptyTab') {
+  //     const tab = pick(_attributes, tabAttributes)
+  //     actionSendWindo(username, windos, windoId, model, tab)
+  //   }
+  // }
+
+  const sendWindo = targetWindoId => () => {
+    if (!magicTab()) return
+    const tab = getMagicTab(pos)
+    actionSendWindo(username, windos, targetWindoId, tab)
+    model.doAction(Actions.deleteTab(tab.id))
+    magicTab(false)
+  }
+
+  if (!model || !username || !pos) {
+    return null
+  }
+
+  // console.log('rendering')
+  // logState()
 
   return (
-    <Layout>
-      <Header>
-        <Row>
-          <Col css={{ _span: 20 }}>
-            <Title css={{ lineSpacing: '2em' }}>{props.page_title}</Title>
-          </Col>
-          <Col css={{ _span: 4 }}>
-            <LocaleSwitcher />
-          </Col>
-        </Row>
-      </Header>
-      <Content>
-        <Row>
-          <Col css={{ width: 500, paddingTop: 50 }}>
-            <InputTodo
-              setTodos={setTodos}
-              todos={todos}
-              placeholder={props.input_placeholder}
-            />
-            <Separator />
-            <TodoList setTodos={setTodos} todos={todos} />
-          </Col>
-        </Row>
-      </Content>
-    </Layout>
+    <UserContext.Provider value={username}>
+      <WindoContext.Provider value={{ sendWindo, windos, windoId }}>
+        <Layout
+          model={model}
+          factory={factory.bind({ pos })}
+          // onContextMenu={onContextMenu}
+        />
+      </WindoContext.Provider>
+    </UserContext.Provider>
   )
+
+  function logState() {
+    log(
+      'username',
+      username,
+      '\nwindoId',
+      windoId,
+      '\npos',
+      pos,
+      '\nwindos',
+      windos,
+      '\nmodel',
+      model
+    )
+  }
 }

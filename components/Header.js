@@ -1,12 +1,12 @@
 import { Laptop, PhoneIphone, Share, TabletMac } from '@mui/icons-material'
 import { map, pickBy, size } from 'lodash'
 import { useContext, useEffect, useState } from 'react'
-import { Col, Row } from '../../styles/grid-components'
-import { mapObject } from '../../utils/list-utils'
-import { STATUS } from '../actions'
-import { UserContext, WindoContext } from '../config'
-import { log } from '../helpers'
-import { onStatusChange } from '../subscriptions'
+import { Col, Row } from '../styles/grid-components'
+import { mapObject } from '../utils/list-utils'
+import { STATUS } from '../windoo/actions'
+import { UserContext, WindoContext } from '../windoo/config'
+import { log } from '../windoo/helpers'
+import { onStatusChange } from '../windoo/subscriptions'
 import { DialogQR } from './DialogQR'
 
 const icon = {

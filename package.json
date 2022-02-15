@@ -19,8 +19,6 @@
     "firebase": "^9.6.6",
     "flexlayout-react": "^0.6.6",
     "framer-motion": "^6.2.4",
-    "graphql": "^16.3.0",
-    "graphql-request": "^4.0.0",
     "lodash": "^4.17.21",
     "next": "^12.0.8",
     "prettier": "^2.5.1",
@@ -28,8 +26,6 @@
     "react": "17.0.2",
     "react-copy-to-clipboard": "^5.0.4",
     "react-dom": "17.0.2",
-    "socket.io": "^4.4.1",
-    "socket.io-client": "^4.4.1",
     "ua-parser-js": "^1.0.2",
     "uuid": "^8.3.2"
   },
